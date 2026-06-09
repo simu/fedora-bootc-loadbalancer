@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e -u -o pipefail
+
+floaty_bin=/usr/sbin/floaty
+log_name=keepalived-floaty-global
+config_file=/etc/floaty/global.yaml
+
+if [ ! -f "$config_file" ]; then
+	echo "Missing config file ${config_file}"
+	exit 3
+fi
+
+"$floaty_bin" --fifo "$config_file" "$@" 2>&1 | logger --tag "$log_name"

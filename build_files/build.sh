@@ -1,24 +1,56 @@
 #!/bin/bash
+# vim: et sw=2
 
 set -ouex pipefail
 
-### Install packages
+dnf5 install -y --setopt=install_weak_deps=0 \
+  cloud-init \
+  cloud-utils-growpart \
+  conntrack \
+  firewalld \
+  haproxy \
+  keepalived \
+  node-exporter \
+  yq
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
+curl -Lo /tmp/floaty.rpm https://github.com/vshn/floaty/releases/download/v1.4.0/floaty_linux_amd64.rpm
+dnf5 install -y /tmp/floaty.rpm
+dnf5 clean all
 
-# this installs a package from fedora repos
-dnf5 install -y tmux 
+rm -rf /run/cloud-init
+rm -rf /run/dnf
+rm -rf /var/lib/dnf
+rm -rf /var/lib/net-snmp
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
+# rename default user in cloud-init config
+yq -i '.system_info.default_user.name="core" | .system_info.default_user.gecos="CoreOS default admin user"' \
+  /etc/cloud/cloud.cfg
 
-#### Example for enabling a System Unit File
+cat >/usr/lib/tmpfiles.d/lb.conf << EOF
+d /var/lib/cloud
+d /var/lib/haproxy
+d /var/lib/keepalived
+d /var/lib/prometheus
+EOF
 
-systemctl enable podman.socket
+systemctl enable \
+  conntrackd \
+  firewalld \
+  haproxy \
+  keepalived \
+  prometheus-node-exporter
+
+cat >/usr/lib/systemd/system-preset/00-load-balancer-services.preset <<EOF
+enable conntrackd
+enable firewalld
+enable haproxy
+enable keepalived
+enable prometheus-node-exporter
+EOF
+
+cp /ctx/floaty-global.wrapper /usr/sbin/floaty-global.wrapper.sh
+cp /ctx/haproxy.cfg /etc/haproxy/haproxy.cfg
+cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
+cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
+
+restorecon -n -v
