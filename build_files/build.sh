@@ -51,6 +51,8 @@ EOF
 cp /ctx/floaty-global.wrapper /usr/sbin/floaty-global.wrapper.sh
 cp /ctx/haproxy.cfg /etc/haproxy/haproxy.cfg
 cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
+# TODO: probably remove this, since we most likely can't generate a working generic config
 cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
 
+# TODO: remove? or actually restorecon?
 restorecon -n -v
