@@ -7,7 +7,7 @@ Before=conntrackd.service
 
 [Service]
 EnvironmentFile=/etc/bootc-loadbalancer-controller-manager/config.env
-ExecStart=/usr/bin/bootc-loadbalancer-controller-manager -cluster-network=$CLUSTER_NETWORK -primary=$PRIMARY
+ExecStart=/usr/bin/bootc-loadbalancer-controller-manager -cluster-network=${CLUSTER_NETWORK} -primary=${PRIMARY}
 
 [Install]
 WantedBy=multi-user.target
