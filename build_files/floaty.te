@@ -1,0 +1,12 @@
+module floaty 1.0;
+
+require {
+	type var_run_t;
+	type keepalived_t;
+	class capability sys_resource;
+	class fifo_file { open read watch };
+}
+
+#============= keepalived_t ==============
+allow keepalived_t self:capability sys_resource;
+allow keepalived_t var_run_t:fifo_file { open read watch };

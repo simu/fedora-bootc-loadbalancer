@@ -1,0 +1,10 @@
+module keepalived-floaty 1.0;
+
+require {
+	type var_run_t;
+	type keepalived_t;
+	class fifo_file { create open read unlink write };
+}
+
+#============= keepalived_t ==============
+allow keepalived_t var_run_t:fifo_file { create read open unlink write };

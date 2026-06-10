@@ -13,9 +13,21 @@ dnf5 install -y --setopt=install_weak_deps=0 \
   node-exporter \
   yq
 
+# TEMP: install selinux helpers
+# TODO(sg): decide if we keep these?
+dnf5 install -y --setopt=install_weak_deps=0 \
+  audit \
+  policycoreutils-python-utils \
+  setroubleshoot-server
+
 curl -Lo /tmp/floaty.rpm https://github.com/vshn/floaty/releases/download/v1.4.0/floaty_linux_amd64.rpm
 dnf5 install -y /tmp/floaty.rpm
 dnf5 clean all
+
+## install bootc-loadbalancer-controller-manager TODO(sg): do this right!
+cp /ctx/bootc-loadbalancer-controller-manager /usr/bin/bootc-loadbalancer-controller-manager
+cp /ctx/bootc-loadbalancer-controller-manager.service /usr/lib/systemd/system/bootc-loadbalancer-controller-manager.service
+mkdir -p /etc/bootc-loadbalancer-controller-manager
 
 rm -rf /run/cloud-init
 rm -rf /run/dnf
@@ -33,9 +45,7 @@ d /var/lib/keepalived
 d /var/lib/prometheus
 EOF
 
-cp /ctx/bootc-loadbalancer-controller-manager /usr/bin/bootc-loadbalancer-controller-manager
-cp /ctx/bootc-loadbalancer-controller-manager.service /usr/lib/systemd/system/bootc-loadbalancer-controller-manager.service
-mkdir -p /etc/bootc-loadbalancer-controller-manager
+## Enable systemd services
 
 systemctl enable \
   bootc-loadbalancer-controller-manager \
@@ -54,9 +64,24 @@ enable keepalived
 enable prometheus-node-exporter
 EOF
 
+## Configure SELinux HAProxy ports
+semanage port -a -t http_port_t -p tcp 6443   # OpenShift API
+semanage port -a -t http_port_t -p tcp 8888   # HAProxy stats
+semanage port -a -t http_port_t -p tcp 22623  # Ignition
+
+## Setup custom SELinux policies
+for policy in keepalived-floaty floaty; do
+  checkmodule -M -m -o "/tmp/${policy}.mod" "/ctx/${policy}.te"
+  semodule_package -o "/tmp/${policy}.pp" -m "/tmp/${policy}.mod"
+  semodule -i "/tmp/${policy}.pp"
+done
+
+## Setup default configs
+
 cp /ctx/floaty-global.wrapper /usr/sbin/floaty-global.wrapper.sh
 cp /ctx/haproxy.cfg /etc/haproxy/haproxy.cfg
 cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
+mkdir -p /etc/keepalived/conf.d
 # TODO: probably remove this, since we most likely can't generate a working generic config
 cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
 
