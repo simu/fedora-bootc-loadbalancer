@@ -68,6 +68,16 @@ sudoif command *args:
     }
     sudoif {{ command }} {{ args }}
 
+
+_build_bootc_lb_controller:
+    #!/usr/bin/env bash
+    if [ ! -d ./bootc-load-balancer-controller ]; then
+        git clone https://github.com/simu/bootc-load-balancer-controller.git
+    fi
+    cd bootc-load-balancer-controller;
+    make build -j1
+    cp bin/manager ../build_files/bootc-loadbalancer-controller-manager
+
 # This Justfile recipe builds a container image using Podman.
 #
 # Arguments:
@@ -86,7 +96,7 @@ sudoif command *args:
 #
 
 # Build the image using the specified parameters
-build $target_image=image_name $tag=default_tag:
+build $target_image=image_name $tag=default_tag: _build_bootc_lb_controller
     #!/usr/bin/env bash
 
     set -x

@@ -2,3 +2,6 @@ cosign.key
 _build_*
 output
 _build-*/**
+
+/bootc-load-balancer-controller
+/build_files/bootc-loadbalancer-controller-manager

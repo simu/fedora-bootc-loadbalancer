@@ -1,0 +1,13 @@
+[Unit]
+Description=Load Balancer config manager
+After=network-online.target
+Before=haproxy.service
+Before=keepalived.service
+Before=conntrackd.service
+
+[Service]
+EnvironmentFile=/etc/bootc-loadbalancer-controller-manager/config.env
+ExecStart=/usr/bin/bootc-loadbalancer-controller-manager -cluster-network=$CLUSTER_NETWORK -primary=$PRIMARY
+
+[Install]
+WantedBy=multi-user.target

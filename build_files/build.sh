@@ -33,7 +33,12 @@ d /var/lib/keepalived
 d /var/lib/prometheus
 EOF
 
+cp /ctx/bootc-loadbalancer-controller-manager /usr/bin/bootc-loadbalancer-controller-manager
+cp /ctx/bootc-loadbalancer-controller-manager.service /usr/lib/systemd/system/bootc-loadbalancer-controller-manager.service
+mkdir -p /etc/bootc-loadbalancer-controller-manager
+
 systemctl enable \
+  bootc-loadbalancer-controller-manager \
   conntrackd \
   firewalld \
   haproxy \
@@ -41,6 +46,7 @@ systemctl enable \
   prometheus-node-exporter
 
 cat >/usr/lib/systemd/system-preset/00-load-balancer-services.preset <<EOF
+enable bootc-loadbalancer-controller-manager
 enable conntrackd
 enable firewalld
 enable haproxy
