@@ -11,6 +11,7 @@ dnf5 install -y --setopt=install_weak_deps=0 \
   haproxy \
   keepalived \
   node-exporter \
+  tcpdump \
   yq
 
 # TEMP: install selinux helpers
@@ -65,6 +66,7 @@ enable prometheus-node-exporter
 EOF
 
 ## Configure SELinux HAProxy ports
+semanage port -a -t http_port_t -p tcp 1936   # Ingress backend healthcheck port
 semanage port -a -t http_port_t -p tcp 6443   # OpenShift API
 semanage port -a -t http_port_t -p tcp 8888   # HAProxy stats
 semanage port -a -t http_port_t -p tcp 22623  # Ignition
