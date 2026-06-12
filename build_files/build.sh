@@ -84,7 +84,7 @@ cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
 mkdir -p /etc/keepalived/conf.d
 # TODO: probably remove this, since we most likely can't generate a working generic config
 cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
-cp /ctx/sysctl-50-lb.conf /usr/lib/sysctl.d/50-lb.conf
+cp /ctx/sysctl-10-loadbalancer-gateway.conf /usr/lib/sysctl.d/10-loadbalancer-gateway.conf
 
 # TODO: remove? or actually restorecon?
 restorecon -n -v
