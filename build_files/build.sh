@@ -35,7 +35,7 @@ rm -rf /var/lib/dnf
 rm -rf /var/lib/net-snmp
 
 # rename default user in cloud-init config
-yq -i '.system_info.default_user.name="core" | .system_info.default_user.gecos="CoreOS default admin user"' \
+yq -i '.system_info.default_user.name="core" | .system_info.default_user.gecos="CoreOS default admin user" | .network.config="disabled"' \
   /etc/cloud/cloud.cfg
 
 cat >/usr/lib/tmpfiles.d/lb.conf << EOF
@@ -84,6 +84,7 @@ cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
 mkdir -p /etc/keepalived/conf.d
 # TODO: probably remove this, since we most likely can't generate a working generic config
 cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
+cp /ctx/sysctl-50-lb.conf /usr/lib/sysctl.d/50-lb.conf
 
 # TODO: remove? or actually restorecon?
 restorecon -n -v
