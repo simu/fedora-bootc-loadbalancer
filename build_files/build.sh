@@ -88,5 +88,14 @@ mkdir -p /etc/keepalived/conf.d
 cp /ctx/conntrackd.conf /etc/conntrackd/conntrackd.conf
 cp /ctx/sysctl-10-loadbalancer-gateway.conf /usr/lib/sysctl.d/10-loadbalancer-gateway.conf
 
-# TODO: remove? or actually restorecon?
-restorecon -n -v
+## Initial firewalld config
+## NOTE(sg): interface zones and cluster-specific rules are set by bootc-loadbalancer-controller-manager
+cp /ctx/firewalld-service-machine-config-server.xml /usr/lib/firewalld/services/machine-config-server.xml
+cp /ctx/firewalld-zone-internal.xml /usr/lib/firewalld/zones/internal.xml
+
+# emulate firewall-cmd --permanent --policy-set=gateway --remove-disable
+# NOTE: we only enable the internal->external forwarding and don't setup the
+# additional work and dmz forwarding.
+for policy in gateway-lan-to-HOST.xml gateway-lan-to-world.xml gateway-world-to-HOST.xml; do
+  sed -e '/^ \+<disable \/>$/d' "/usr/lib/firewalld/policies/${policy}" >"/etc/firewalld/policies/${policy}"
+done

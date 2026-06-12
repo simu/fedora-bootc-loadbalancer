@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>OpenShift machine-config-server</short>
+  <description>The OpenShift machine-config-server allows cluster nodes to download their latest ignition configs.</description>
+  <port protocol="tcp" port="22623"/>
+</service>

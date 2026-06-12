@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+  <short>Internal</short>
+  <description>Internal (cluster network) zone. Cluster nodes need to reach SSH, API server, ingress and machine-config-server on the LBs.</description>
+  <service name="dhcpv6-client"/>
+  <service name="http"/>
+  <service name="https"/>
+  <service name="kube-apiserver"/>
+  <service name="machine-config-server"/>
+  <service name="ssh"/>
+  <forward/>
+</zone>
