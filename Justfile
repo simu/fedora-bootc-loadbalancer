@@ -105,6 +105,7 @@ build $target_image=image_name $tag=default_tag: _build_bootc_lb_controller
     if [[ -z "$(git status -s)" ]]; then
         BUILD_ARGS+=("--build-arg" "SHA_HEAD_SHORT=$(git rev-parse --short HEAD)")
     fi
+    BUILD_ARGS+=("--build-arg" "IMAGE_TAG=${tag}")
 
     podman build \
         "${BUILD_ARGS[@]}" \

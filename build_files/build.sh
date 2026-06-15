@@ -3,6 +3,8 @@
 
 set -ouex pipefail
 
+echo "building for tag $1"
+
 dnf5 install -y --setopt=install_weak_deps=0 \
   cloud-init \
   cloud-utils-growpart \
@@ -70,17 +72,31 @@ semanage port -a -t http_port_t -p tcp 1936   # Ingress backend healthcheck port
 semanage port -a -t http_port_t -p tcp 6443   # OpenShift API
 semanage port -a -t http_port_t -p tcp 8888   # HAProxy stats
 semanage port -a -t http_port_t -p tcp 22623  # Ignition
+semanage port -a -t http_port_t -p tcp 30080  # Ingress backend http nodeport
+semanage port -a -t http_port_t -p tcp 30091  # Ingress backend metrics/healthcheck nodeport
+semanage port -a -t http_port_t -p tcp 30443  # Ingress backend https nodeport
+
 
 ## Setup custom SELinux policies
-for policy in keepalived-floaty floaty; do
+POLICY_LIST=("keepalived-floaty" "floaty")
+if [ "$1" == "fake-floaty" ]; then
+  POLICY_LIST+=("fake-floaty")
+fi
+for policy in "${POLICY_LIST[@]}"; do
+  echo "Installing SELinux policy $policy"
   checkmodule -M -m -o "/tmp/${policy}.mod" "/ctx/${policy}.te"
   semodule_package -o "/tmp/${policy}.pp" -m "/tmp/${policy}.mod"
   semodule -i "/tmp/${policy}.pp"
 done
 
-## Setup default configs
+## setup floaty keepalived script
+if [ "$1" == "fake-floaty" ]; then
+  cp /ctx/fake-floaty.sh /usr/sbin/floaty-global.wrapper.sh
+else
+  cp /ctx/floaty-global.wrapper /usr/sbin/floaty-global.wrapper.sh
+fi
 
-cp /ctx/floaty-global.wrapper /usr/sbin/floaty-global.wrapper.sh
+## Setup default configs
 cp /ctx/haproxy.cfg /etc/haproxy/haproxy.cfg
 cp /ctx/keepalived.conf /etc/keepalived/keepalived.conf
 mkdir -p /etc/keepalived/conf.d

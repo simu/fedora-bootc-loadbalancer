@@ -1,0 +1,20 @@
+module fake-floaty 1.0;
+
+require {
+	type var_run_t;
+	type ifconfig_exec_t;
+	type journalctl_exec_t;
+	type keepalived_t;
+	type soundd_port_t;
+	class file { execute getattr open read };
+	class fifo_file { getattr ioctl };
+	class tcp_socket name_connect;
+}
+
+#============= keepalived_t ==============
+
+allow keepalived_t ifconfig_exec_t:file { execute getattr read };
+allow keepalived_t ifconfig_exec_t:file open;
+allow keepalived_t journalctl_exec_t:file getattr;
+allow keepalived_t var_run_t:fifo_file { getattr ioctl };
+allow keepalived_t soundd_port_t:tcp_socket name_connect;
