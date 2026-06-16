@@ -101,16 +101,23 @@ build $target_image=image_name $tag=default_tag: _build_bootc_lb_controller
 
     set -x
 
+    commit_sha=$(git describe --tags --always --dirty=+dirty)
+
     BUILD_ARGS=()
     if [[ -z "$(git status -s)" ]]; then
-        BUILD_ARGS+=("--build-arg" "SHA_HEAD_SHORT=$(git rev-parse --short HEAD)")
+        BUILD_ARGS+=("--build-arg" "SHA_HEAD_SHORT=$commit_sha")
     fi
     BUILD_ARGS+=("--build-arg" "IMAGE_TAG=${tag}")
+
+    # hardcoded for Fedora 44
+    version="44.$(date +"%Y%M%d")-${commit_sha}"
 
     podman build \
         "${BUILD_ARGS[@]}" \
         --pull=always \
         --tag "${target_image}:${tag}" \
+        --label org.opencontainers.image.title="Fedora bootc loadbalancer" \
+        --label org.opencontainers.image.version="$version" \
         .
 
 # Command: _rootful_load_image
