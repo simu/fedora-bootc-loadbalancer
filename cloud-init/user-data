@@ -1,0 +1,26 @@
+#cloud-config
+# add your ssh public key here
+ssh_authorized_keys: []
+write_files:
+  - path: /etc/ostree/auth.json
+    # Edit this if you need auth for the container registry hosting your
+    # bootable container. Consider using `encoding: base64`.
+    content: "{}"
+  - path: /etc/bootc-loadbalancer-controller-manager/config.env
+    # Edit this to match your cluster's config
+    content: |
+      KUBECONFIG=/etc/bootc-loadbalancer-controller-manager/kubeconfig
+      CLUSTER_NETWORK=192.168.100.0/24
+      PRIMARY=false
+  - path: /etc/bootc-loadbalancer-controller-manager/kubeconfig
+    # update this with a suitable kubeconfig, consider using `encoding:
+    # base64` to avoid issues with nested YAML.
+    content: ""
+  - path: /etc/bootc-loadbalancer-controller-manager/lbconfig.yaml
+    encoding: base64
+    # this is the file `examples/openshift-cloudscale.yaml` provided in
+    # https://github.com/simu/bootc-load-balancer-controller. Update with a
+    # `LoadBalancerConfig` and cloud provider secret that are suitable for
+    # your cluster.
+    content: LS0tCmFwaVZlcnNpb246IGNvbmZpZy5ib290Yy1sYi5zeW4udG9vbHMvdjFhbHBoYTEKa2luZDogTG9hZEJhbGFuY2VyQ29uZmlnCm1ldGFkYXRhOgogIG5hbWU6IHRlc3QtbGIKc3BlYzoKICBjbG91ZDogY2xvdWRzY2FsZQogIGNsb3VkQ3JlZGVudGlhbHM6CiAgICBuYW1lOiBjbG91ZHNjYWxlLXRva2VuCiAgZGlzdHJpYnV0aW9uOiBvcGVuc2hpZnQKICAjIE5PVEU6IFJlcGxhY2UgcHVibGljIElQcyB3aXRoIGNsb3Vkc2NhbGUgZmxvYXRpbmcgSVBzIGlmIHlvdSB3YW50IHRvIHRyeQogICMgdGhpcyBvdXQgb24gY2xvdWRzY2FsZS4KICB2aXJ0dWFsQWRkcmVzc2VzOgogICAgYXBpOgogICAgICAtIGFkZHJlc3M6IDE5Mi4xNjguMTAwLjEwMC8zMgogICAgICAgIHR5cGU6IHByaXZhdGUKICAgICAgLSBhZGRyZXNzOiAxOTguNTEuMTAwLjEwMC8zMgogICAgICAgIHR5cGU6IHB1YmxpYwogICAgICAtIGFkZHJlc3M6IDJhMDI6MTY4OjY1NmQ6ODAwMDo6MTAwLzEyOAogICAgICAgIHR5cGU6IHB1YmxpYwogICAgaW5ncmVzczoKICAgICAgLSBhZGRyZXNzOiAxOTguNTEuMTAwLjgwLzMyCiAgICAgICAgdHlwZTogcHVibGljCiAgICAgIC0gYWRkcmVzczogMmEwMjoxNjg6NjU2ZDo4MDAwOjoyMDAvMTI4CiAgICAgICAgdHlwZTogcHVibGljCiAgICBuYXQ6CiAgICAgIGFkZHJlc3M6IDE5OC41MS4xMDAuMjUzLzMyCiAgICAgIHR5cGU6IHB1YmxpYwogIGFwaUJhY2tlbmQ6CiAgICBub2RlU2VsZWN0b3I6CiAgICAgIG1hdGNoTGFiZWxzOgogICAgICAgIG5vZGUtcm9sZS5rdWJlcm5ldGVzLmlvL2NvbnRyb2wtcGxhbmU6ICcnCiAgaW5ncmVzc0JhY2tlbmQ6CiAgICBub2RlU2VsZWN0b3I6CiAgICAgIG1hdGNoTGFiZWxzOgogICAgICAgIG5vZGUtcm9sZS5rdWJlcm5ldGVzLmlvL2luZnJhOiAnJwotLS0KYXBpVmVyc2lvbjogdjEKa2luZDogU2VjcmV0Cm1ldGFkYXRhOgogIG5hbWU6IGNsb3Vkc2NhbGUtdG9rZW4Kc3RyaW5nRGF0YToKICAjIFJlcGxhY2Ugd2l0aCBhIGNsb3Vkc2NhbGUgQVBJIHRva2VuCiAgdG9rZW46IHZlcnlzZWNyZXR0b2tlbgo=
+runcmd: []
