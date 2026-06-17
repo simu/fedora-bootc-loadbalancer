@@ -14,4 +14,10 @@ This repository is based on the [Universal Blue image-template repo] (see
 commit history and [README.image-template.md](/README.image-template.md) for
 details).
 
+The bootable container build process compiles the Kubernetes controller
+implemented by [simu/bootc-load-balancer-controller] and copies the resulting
+binary to `/usr/bin/bootc-loadbalancer-controller-manager` in the bootable
+container.
+
 [Universal Blue image-template repo]: https://github.com/ublue-os/image-template
+[simu/bootc-load-balancer-controller]: https://github.com/simu/bootc-load-balancer-controller
