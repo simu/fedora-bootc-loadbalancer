@@ -19,5 +19,9 @@ implemented by [simu/bootc-load-balancer-controller] and copies the resulting
 binary to `/usr/bin/bootc-loadbalancer-controller-manager` in the bootable
 container.
 
+You can also check out the the [VSHN blog post] for more details on
+this project.
+
 [Universal Blue image-template repo]: https://github.com/ublue-os/image-template
 [simu/bootc-load-balancer-controller]: https://github.com/simu/bootc-load-balancer-controller
+[VSHN blog post]: https://www.vshn.ch/en/blog/building-a-modern-load-balancer-and-nat-gateway-with-fedora-bootable-containers/
